@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App-wide fixed background to match the landing artwork (richer pale-blue waves) */
+html, body, #root {
+  height: 100%;
+  /* stronger, richer pale-blue gradient with subtle accents */
+  background-color: #f3fbff;
+  background-image:
+    radial-gradient(1200px 420px at 8% 18%, rgba(139,92,246,0.08), transparent 24%),
+    radial-gradient(1000px 420px at 86% 68%, rgba(47,128,255,0.06), transparent 20%),
+    linear-gradient(180deg, #dff4ff 0%, #eaf9ff 36%, #ffffff 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

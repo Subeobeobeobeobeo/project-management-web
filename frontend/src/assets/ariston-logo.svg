@@ -1,0 +1,12 @@
+<svg width="320" height="70" viewBox="0 0 320 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .brand-fill { fill: #bf102d; font-family: 'Montserrat', 'Arial', sans-serif; font-weight: 700; }
+      .brand-stroke { stroke: #bf102d; stroke-width: 5; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect x="5" y="5" width="70" height="60" rx="12" class="brand-stroke" fill="none" />
+  <path d="M40 20 L60 40 L60 60 L20 60 L20 40 Z" fill="none" class="brand-stroke" />
+  <path d="M32 34 L48 50 L48 60 L32 60 Z" fill="#bf102d" />
+  <text x="95" y="48" font-size="42" class="brand-fill">ARISTON</text>
+</svg>

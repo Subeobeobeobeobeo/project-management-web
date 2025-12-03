@@ -1,0 +1,24 @@
+.form {
+  display: flex;
+  gap: 10px;
+  margin: 20px;
+}
+
+.form input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.form button {
+  padding: 8px 12px;
+  background: #C80F2E;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form button:hover {
+  background: #FF4F70;
+}

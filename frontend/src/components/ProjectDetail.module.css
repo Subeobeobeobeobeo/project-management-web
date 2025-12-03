@@ -1,0 +1,31 @@
+.detail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.closeBtn {
+  float: right;
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.row {
+  margin: 10px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.row label {
+  font-weight: bold;
+  width: 120px;
+}
