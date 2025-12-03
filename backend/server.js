@@ -22,12 +22,28 @@ if (!SHEET_ID || SHEET_ID.trim() === '') {
 }
 
 // ------------------- Google Auth -------------------
-const credentialsPath = path.resolve(__dirname, 'credentials/service-account.json');
-if (!fs.existsSync(credentialsPath)) {
-  console.error('Service account JSON file not found!');
-  process.exit(1);
+let credentials;
+
+// Try to load from environment variable first (for production)
+if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+  try {
+    credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+    console.log('✅ Loaded credentials from environment variable');
+  } catch (err) {
+    console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON:', err.message);
+    process.exit(1);
+  }
+} else {
+  // Fallback to file (for local development)
+  const credentialsPath = path.resolve(__dirname, 'credentials/service-account.json');
+  if (!fs.existsSync(credentialsPath)) {
+    console.error('Service account JSON file not found and GOOGLE_SERVICE_ACCOUNT_JSON environment variable not set!');
+    process.exit(1);
+  }
+  credentials = require(credentialsPath);
+  console.log('✅ Loaded credentials from file');
 }
-const credentials = require(credentialsPath);
+
 const auth = new google.auth.GoogleAuth({
   credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
