@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: project-management-backend
+    runtime: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5050
+      - key: SHEET_ID
+        sync: false

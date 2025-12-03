@@ -1,0 +1,14 @@
+{
+  "name": "project-management-web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm --prefix frontend start",
+    "start:backend": "node backend/server.js",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "react-scripts": "^5.0.1"
+  }
+}
