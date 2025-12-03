@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './Dashboard.css';
+import { API_BASE } from '../config';
 
 // small city to coordinate map for Vietnam (approximate)
 const CITY_COORDS = {
@@ -314,7 +315,7 @@ export default function Dashboard({ projects = [] }) {
   useEffect(() => {
     // If no projects provided, try fetching from API endpoint (uses CRA proxy if configured)
     if ((!projects || !projects.length) && fetchedProjects === null) {
-      fetch('/api/projects').then(r=>r.json()).then(data=>{
+      fetch(`${API_BASE}/api/projects`).then(r=>r.json()).then(data=>{
         // backend returns { values: [...] } or a raw array
         const vals = data && data.values ? data.values : (Array.isArray(data) ? data : []);
         const norm = (vals || []).map((row,i)=>{
@@ -324,7 +325,7 @@ export default function Dashboard({ projects = [] }) {
           return copy;
         });
         setFetchedProjects(norm);
-      }).catch(()=>{ setFetchedProjects([]); });
+      }).catch((err)=>{ console.error('Failed to fetch projects:', err); setFetchedProjects([]); });
     }
   }, [projects, fetchedProjects]);
 

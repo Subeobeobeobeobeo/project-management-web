@@ -6,7 +6,10 @@ const cors = require('cors');
 const { google } = require('googleapis');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins for now (can restrict to Vercel domain later)
+  credentials: true
+}));
 app.use(express.json());
 
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
