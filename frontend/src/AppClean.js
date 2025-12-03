@@ -8,6 +8,7 @@ import WeeklyReport from './components/WeeklyReport';
 import CalendarView from './components/CalendarView';
 import Dashboard from './components/Dashboard';
 import LandingPage from './components/LandingPage';
+import { API_BASE } from './config';
 
 const safeNumber = (value) => {
   const num = Number(value);
@@ -38,8 +39,8 @@ export default function App() {
 
   const fetchProjects = async () => {
     try {
-      console.log('[App] Fetching projects from /api/projects');
-      const res = await fetch('/api/projects');
+      console.log('[App] Fetching projects from', `${API_BASE}/api/projects`);
+      const res = await fetch(`${API_BASE}/api/projects`);
       console.log('[App] Response status:', res.status);
       const data = await res.json();
       console.log('[App] Data received:', data);
@@ -91,7 +92,7 @@ export default function App() {
   }, [filterOpen]);
 
   const handleCreateProject = async (newProject) => {
-    const res = await fetch('/api/projects', {
+    const res = await fetch(`${API_BASE}/api/projects`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newProject)
@@ -111,7 +112,7 @@ export default function App() {
     const targetIndex = typeof rowIdx === 'number' ? rowIdx : selectedIndex;
     if (targetIndex == null) return;
     const sheetRow = targetIndex + 7;
-    const res = await fetch(`/api/projects/${sheetRow}`, {
+    const res = await fetch(`${API_BASE}/api/projects/${sheetRow}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedProject)
