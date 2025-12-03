@@ -85,6 +85,15 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
   const [draggedEvent, setDraggedEvent] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [recentlyMoved, setRecentlyMoved] = useState(new Map()); // Map of projectName -> targetMonth
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    projectName: '',
+    quantity: '',
+    month: 0,
+    year: today.getFullYear(),
+    showProjectDropdown: false,
+    searchQuery: ''
+  });
 
   // Build all events for the entire year
   const allYearEvents = useMemo(() => {
@@ -244,6 +253,65 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
     .flatMap(m => allYearEvents[m])
     .slice(0, 5);
 
+  // Filter projects based on search query
+  const filteredProjects = useMemo(() => {
+    if (!newEvent.searchQuery) return projects;
+    const query = newEvent.searchQuery.toLowerCase();
+    return projects.filter(p => {
+      const name = (p[5] || '').toLowerCase();
+      return name.includes(query);
+    });
+  }, [projects, newEvent.searchQuery]);
+
+  const handleSelectProject = (project) => {
+    setNewEvent({
+      ...newEvent,
+      projectName: project[5] || '',
+      showProjectDropdown: false,
+      searchQuery: ''
+    });
+  };
+
+  const handleAddEvent = async () => {
+    if (!newEvent.projectName || !newEvent.quantity || !onEditEvent) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const selectedMonthName = monthNames[newEvent.month];
+
+    // Find or create project
+    const existingProjectIndex = projects.findIndex(p => (p[5] || '').toLowerCase() === newEvent.projectName.toLowerCase());
+    
+    const updatedData = {
+      'Project Name': newEvent.projectName,
+      [selectedMonthName]: String(newEvent.quantity)
+    };
+
+    try {
+      if (existingProjectIndex >= 0) {
+        // Update existing project
+        await onEditEvent(updatedData, existingProjectIndex);
+      } else {
+        // Create new project (add to end)
+        await onEditEvent(updatedData, projects.length);
+      }
+      
+      setShowAddModal(false);
+      setNewEvent({
+        projectName: '',
+        quantity: '',
+        month: 0,
+        year: today.getFullYear(),
+        showProjectDropdown: false,
+        searchQuery: ''
+      });
+    } catch (err) {
+      alert('Failed to add event: ' + err.message);
+    }
+  };
+
 
 
   return (
@@ -309,6 +377,12 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
             <button onClick={goToNextYear} className="nav-arrow">›</button>
           </div>
           <div className="topbar-right">
+            <button 
+              className="add-event-btn"
+              onClick={() => setShowAddModal(true)}
+            >
+              + Add Event
+            </button>
             <input type="text" placeholder="Search projects..." className="search-input" />
           </div>
         </div>
@@ -379,6 +453,108 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
           })}
         </div>
       </div>
+
+      {showAddModal && (
+        <div className="modal-backdrop" onClick={() => setShowAddModal(false)}>
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add New Event</h3>
+              <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-row">
+                <label className="form-label">Project Name *</label>
+                <div style={{ position: 'relative' }}>
+                  <div className="input-with-button">
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Enter project name"
+                      value={newEvent.projectName}
+                      onChange={(e) => setNewEvent({ ...newEvent, projectName: e.target.value })}
+                    />
+                    <button 
+                      type="button"
+                      className="select-project-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setNewEvent({ ...newEvent, showProjectDropdown: !newEvent.showProjectDropdown });
+                      }}
+                    >
+                      Select from existing
+                    </button>
+                  </div>
+                  {newEvent.showProjectDropdown && (
+                    <div className="project-dropdown">
+                      <input
+                        type="text"
+                        className="dropdown-search"
+                        placeholder="Search projects..."
+                        value={newEvent.searchQuery}
+                        onChange={(e) => setNewEvent({ ...newEvent, searchQuery: e.target.value })}
+                        autoFocus
+                      />
+                      <div className="project-list">
+                        {filteredProjects.length > 0 ? (
+                          filteredProjects.slice(0, 10).map((proj, idx) => (
+                            <div 
+                              key={idx}
+                              className="project-item"
+                              onClick={() => handleSelectProject(proj)}
+                            >
+                              <div className="project-name">{proj[5] || `Project ${idx + 1}`}</div>
+                              <div className="project-meta">{proj[16] || 'No product'} • {proj[13] || 'No location'}</div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="no-results">No projects found</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="form-row">
+                <label className="form-label">Quantity *</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter quantity"
+                  value={newEvent.quantity}
+                  onChange={(e) => setNewEvent({ ...newEvent, quantity: e.target.value })}
+                />
+              </div>
+              <div className="form-row">
+                <label className="form-label">Month & Year *</label>
+                <div className="month-year-select">
+                  <select 
+                    className="form-select"
+                    value={newEvent.month}
+                    onChange={(e) => setNewEvent({ ...newEvent, month: Number(e.target.value) })}
+                  >
+                    {MONTHS.map((month, idx) => (
+                      <option key={idx} value={idx}>{month}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    className="form-input year-input"
+                    value={newEvent.year}
+                    onChange={(e) => setNewEvent({ ...newEvent, year: Number(e.target.value) })}
+                    min="2020"
+                    max="2030"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={handleAddEvent}>Add Event</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {editingEvent && (
         <div className="modal-backdrop" onClick={() => setEditingEvent(null)}>

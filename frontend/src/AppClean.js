@@ -350,11 +350,11 @@ export default function App() {
                   <div className="identity-card__shine" />
                   <div className="identity-card__avatar">
                     <img 
-                      src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&q=80" 
+                      src={require('./assets/loan-avatar.png')}
                       alt="Loan Nguyen - Senior Sales Executive"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://ui-avatars.com/api/?name=Loan+Nguyen&size=400&background=8b5cf6&color=fff&bold=true&format=svg';
+                        e.target.src = 'https://ui-avatars.com/api/?name=Loan+Nguyen&size=400&background=bc0e09&color=fff&bold=true&format=svg';
                       }}
                     />
                   </div>

@@ -13,7 +13,7 @@ html, body, #root {
   /* stronger, richer pale-blue gradient with subtle accents */
   background-color: #f3fbff;
   background-image:
-    radial-gradient(1200px 420px at 8% 18%, rgba(139,92,246,0.08), transparent 24%),
+    radial-gradient(1200px 420px at 8% 18%, rgba(188,14,9,0.08), transparent 24%),
     radial-gradient(1000px 420px at 86% 68%, rgba(47,128,255,0.06), transparent 20%),
     linear-gradient(180deg, #dff4ff 0%, #eaf9ff 36%, #ffffff 100%);
   background-attachment: fixed;

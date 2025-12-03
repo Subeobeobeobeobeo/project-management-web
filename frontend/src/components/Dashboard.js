@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './Dashboard.css';
 import { API_BASE } from '../config';
+import loanAvatar from '../assets/loan-avatar.png';
 
 // small city to coordinate map for Vietnam (approximate)
 const CITY_COORDS = {
@@ -430,7 +431,7 @@ export default function Dashboard({ projects = [] }) {
           name: 'Miền Bắc',
           latRange: [18, 24],
           projects: [], 
-          color: '#8b5cf6' // Purple
+          color: '#bc0e09' // Purple
         },
         central: { 
           name: 'Miền Trung',
@@ -482,9 +483,9 @@ export default function Dashboard({ projects = [] }) {
           // Draw single Vietnam layer with gradient fill
           const vietnamLayer = L.geoJSON(vietnam, {
             style: {
-              fillColor: '#8b5cf6',
+              fillColor: '#bc0e09',
               fillOpacity: 0.6,
-              color: '#6b21a8',
+              color: '#8b0a06',
               weight: 2.5,
               opacity: 1
             },
@@ -499,7 +500,7 @@ export default function Dashboard({ projects = [] }) {
                 
                 const tooltipHtml = `
                   <div style="padding:14px 18px;font-family:system-ui,-apple-system,sans-serif;min-width:180px;">
-                    <div style="font-weight:800;font-size:18px;margin-bottom:8px;background:linear-gradient(135deg, #6b21a8, #8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${region.name}</div>
+                    <div style="font-weight:800;font-size:18px;margin-bottom:8px;background:linear-gradient(135deg, #8b0a06, #bc0e09);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${region.name}</div>
                     <div style="color:#64748b;font-size:15px;margin-bottom:10px;font-weight:600;display:flex;align-items:center;gap:8px;">
                       <span style="width:12px;height:12px;background:${region.color};border-radius:50%;display:inline-block;"></span>
                       ${region.projects.length} dự án
@@ -697,7 +698,7 @@ export default function Dashboard({ projects = [] }) {
         });
 
       // Create modern pin icon with shadow (purple theme)
-      const pinSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='44' viewBox='0 0 32 44'><defs><filter id='shadow' x='-50%' y='-50%' width='200%' height='200%'><feGaussianBlur in='SourceAlpha' stdDeviation='2.5'/><feOffset dx='0' dy='3' result='offsetblur'/><feComponentTransfer><feFuncA type='linear' slope='0.4'/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in='SourceGraphic'/></feMerge></filter><linearGradient id='pinGradient' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' style='stop-color:%238b5cf6;stop-opacity:1'/><stop offset='100%' style='stop-color:%236b21a8;stop-opacity:1'/></linearGradient></defs><g filter='url(#shadow)'><path d='M16 0C9.4 0 4 5.4 4 12c0 8 12 20 12 20s12-12 12-20c0-6.6-5.4-12-12-12z' fill='url(%23pinGradient)'/><circle cx='16' cy='12' r='5' fill='white' opacity='0.9'/><circle cx='16' cy='12' r='3' fill='%238b5cf6'/></g></svg>`;
+      const pinSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='44' viewBox='0 0 32 44'><defs><filter id='shadow' x='-50%' y='-50%' width='200%' height='200%'><feGaussianBlur in='SourceAlpha' stdDeviation='2.5'/><feOffset dx='0' dy='3' result='offsetblur'/><feComponentTransfer><feFuncA type='linear' slope='0.4'/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in='SourceGraphic'/></feMerge></filter><linearGradient id='pinGradient' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' style='stop-color:%23bc0e09;stop-opacity:1'/><stop offset='100%' style='stop-color:%238b0a06;stop-opacity:1'/></linearGradient></defs><g filter='url(#shadow)'><path d='M16 0C9.4 0 4 5.4 4 12c0 8 12 20 12 20s12-12 12-20c0-6.6-5.4-12-12-12z' fill='url(%23pinGradient)'/><circle cx='16' cy='12' r='5' fill='white' opacity='0.9'/><circle cx='16' cy='12' r='3' fill='%23bc0e09'/></g></svg>`;
       const pinUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(pinSvg);
       const redIcon = L.icon({ iconUrl: pinUrl, iconSize: [32, 44], iconAnchor: [16, 44], popupAnchor: [0, -44] });
 
@@ -794,7 +795,7 @@ export default function Dashboard({ projects = [] }) {
           
           return L.divIcon({
             html: `<div style="
-              background: linear-gradient(135deg, #8b5cf6, #6b21a8);
+              background: linear-gradient(135deg, #bc0e09, #8b0a06);
               color: white;
               border-radius: 50%;
               display: flex;
@@ -802,7 +803,7 @@ export default function Dashboard({ projects = [] }) {
               justify-content: center;
               font-weight: 700;
               font-size: ${size === 'large' ? '16px' : size === 'medium' ? '14px' : '12px'};
-              box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+              box-shadow: 0 4px 12px rgba(188, 14, 9, 0.4);
               border: 3px solid white;
             ">${count}</div>`,
             className: 'marker-cluster marker-cluster-' + size,
@@ -890,7 +891,7 @@ export default function Dashboard({ projects = [] }) {
             background:white;
             padding:8px 12px;
             text-decoration:none;
-            color:#6b21a8;
+            color:#8b0a06;
             font-weight:600;
             font-size:12px;
             border-radius:4px;
@@ -945,9 +946,23 @@ export default function Dashboard({ projects = [] }) {
       <div className="dashboard-content">
         {/* Landing removed: landing is now a standalone route/component, not rendered here */}
         <header className="dash-header">
-          <div>
-            <div className="dash-welcome">Welcome back, Loan!</div>
-            <div className="dash-sub">You have {totalProjects} projects</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <img 
+              src={loanAvatar} 
+              alt="Loan" 
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '3px solid #bc0e09',
+                boxShadow: '0 4px 12px rgba(188, 14, 9, 0.3)'
+              }}
+            />
+            <div>
+              <div className="dash-welcome">Welcome back, Loan!</div>
+              <div className="dash-sub">You have {totalProjects} projects</div>
+            </div>
           </div>
         </header>
         <div className="dash-top-cards">
@@ -995,14 +1010,14 @@ export default function Dashboard({ projects = [] }) {
                   onClick={() => setSelectedMonth(null)}
                   style={{
                     padding: '6px 12px',
-                    background: 'linear-gradient(135deg, #8b5cf6, #6b21a8)',
+                    background: 'linear-gradient(135deg, #bc0e09, #8b0a06)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
                     fontSize: '12px',
                     fontWeight: '600',
                     cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)'
+                    boxShadow: '0 2px 8px rgba(188, 14, 9, 0.3)'
                   }}
                 >
                   ← View All Year
@@ -1013,8 +1028,8 @@ export default function Dashboard({ projects = [] }) {
               <svg className="mini-chart" viewBox="0 0 900 270" preserveAspectRatio="xMinYMin meet" onMouseLeave={() => setChartTip(t => ({ ...t, visible: false }))}>
                 <defs>
                   <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#6b21a8" stopOpacity="0.9" />
+                    <stop offset="0%" stopColor="#bc0e09" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#8b0a06" stopOpacity="0.9" />
                   </linearGradient>
                   <linearGradient id="trendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
@@ -1255,7 +1270,7 @@ export default function Dashboard({ projects = [] }) {
             <div className="month-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="month-modal-header">
                 <div>
-                  <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', background: 'linear-gradient(135deg, #6b21a8, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '800', background: 'linear-gradient(135deg, #8b0a06, #bc0e09)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                     {monthDetailModal.month}
                   </h2>
                   <div style={{ margin: '10px 0 0', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
