@@ -377,7 +377,7 @@ export default function App() {
                     </div>
                     <div>
                       <span>Total Volume</span>
-                      <strong>{homeSummary.totalQtyLabel}</strong>
+                      <strong>1.000.000M</strong>
                     </div>
                   </div>
                   

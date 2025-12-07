@@ -721,18 +721,36 @@ export default function Dashboard({ projects = [] }) {
       const geocode = async (q) => {
         try{
           const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}, Vietnam&limit=1`;
-          const res = await fetch(url, { headers: { 'Accept-Language':'en' } });
+          const res = await fetch(url, { headers: { 'Accept-Language':'en', 'User-Agent': 'ProjectManagementApp/1.0' } });
           const json = await res.json();
           if (json && json[0]) return [parseFloat(json[0].lat), parseFloat(json[0].lon)];
-        }catch(e){}
+        }catch(e){
+          console.warn('Geocoding failed for:', q, e.message);
+        }
         return null;
       };
 
-      const geocoded = await Promise.all(toGeocode.map(async t=>{
-        const cached = geocodeCacheRef.current[t.key]; if (cached) return { k:t.key, v:cached };
-        const v = await geocode(t.label); if (v){ geocodeCacheRef.current[t.key]=v; return { k:t.key, v }; }
-        return { k:t.key, v:null };
-      }));
+      // Geocode sequentially with delay to respect rate limits
+      const geocoded = [];
+      for (let i = 0; i < toGeocode.length; i++) {
+        const t = toGeocode[i];
+        const cached = geocodeCacheRef.current[t.key];
+        if (cached) {
+          geocoded.push({ k: t.key, v: cached });
+        } else {
+          const v = await geocode(t.label);
+          if (v) {
+            geocodeCacheRef.current[t.key] = v;
+            geocoded.push({ k: t.key, v });
+          } else {
+            geocoded.push({ k: t.key, v: null });
+          }
+          // Delay 1 second between requests to respect OpenStreetMap rate limits
+          if (i < toGeocode.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+      }
       geocoded.forEach(g=>{ if (g.v) resolved[g.k]=g.v; });
 
       // Group projects by region (using regionDefs defined earlier)
