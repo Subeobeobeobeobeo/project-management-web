@@ -361,7 +361,7 @@ export default function App() {
                   </div>
                   <div className="identity-card__label">★ Top Performer 2025</div>
                   <h3 className="identity-card__name">Loan Nguyen</h3>
-                  <p className="identity-card__role">Senior Sales Executive<br/>Regional Enterprise Partner</p>
+                  <p className="identity-card__role">Sales Project Director</p>
                   
                   <div className="identity-card__badges">
                     <span className="identity-card__badge">🏆 Top 5%</span>
@@ -373,11 +373,11 @@ export default function App() {
                   <div className="identity-card__stats">
                     <div>
                       <span>Active Deals</span>
-                      <strong>{homeSummary.totalDeals}</strong>
+                      <strong>367</strong>
                     </div>
                     <div>
                       <span>Total Volume</span>
-                      <strong>1.000.000M</strong>
+                      <strong>$1.000.000.000</strong>
                     </div>
                   </div>
                   
