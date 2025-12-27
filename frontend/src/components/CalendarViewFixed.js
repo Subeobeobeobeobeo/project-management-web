@@ -82,9 +82,7 @@ function buildEventsFromProjects(projects = [], year, month) {
 export default function CalendarViewFixed({ projects = [], onEditEvent }) {
   const today = new Date();
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [draggedEvent, setDraggedEvent] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [recentlyMoved, setRecentlyMoved] = useState(new Map()); // Map of projectName -> targetMonth
   const [showAddModal, setShowAddModal] = useState(false);
   const [newEvent, setNewEvent] = useState({
     projectName: '',
@@ -125,7 +123,8 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
         productName: project[16] || '',
         quantity: evt.qty || 0,
         originalMonth: monthIdx,
-        monthName: monthNames[parseInt(monthIdx)]
+        monthName: monthNames[parseInt(monthIdx)],
+        year: currentYear
       });
     }
   };
@@ -148,101 +147,6 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
     } catch (err) {
       alert('Failed to update: ' + err.message);
     }
-  };
-
-  const handleDragStart = (evt, sourceMonth, e) => {
-    console.log('[Calendar] Drag started:', evt.title, 'from month', sourceMonth);
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggedEvent({ ...evt, sourceMonth });
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = async (targetMonth) => {
-    if (!draggedEvent || !onEditEvent) {
-      console.log('[Calendar] Drop cancelled - no dragged event or onEditEvent');
-      return;
-    }
-    
-    const sourceMonthNum = parseInt(draggedEvent.sourceMonth);
-    const targetMonthNum = parseInt(targetMonth);
-    
-    console.log('[Calendar] Dropped on month', targetMonthNum, 'from', sourceMonthNum);
-    
-    if (sourceMonthNum === targetMonthNum) {
-      console.log('[Calendar] Same month, ignoring');
-      setDraggedEvent(null);
-      return;
-    }
-
-    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    const project = projects[draggedEvent.projectIndex];
-    
-    if (!project) {
-      console.error('[Calendar] Project not found at index', draggedEvent.projectIndex);
-      setDraggedEvent(null);
-      return;
-    }
-    
-    if (draggedEvent.type === 'forecast') {
-      // Get current quantity from source month
-      const sourceCol = monthHeaderIndex[monthNames[sourceMonthNum]];
-      const targetCol = monthHeaderIndex[monthNames[targetMonthNum]];
-      const currentQty = Number(project[sourceCol] || 0);
-      const targetCurrentQty = Number(project[targetCol] || 0);
-      
-      console.log('[Calendar] Moving', currentQty, 'units from', monthNames[sourceMonthNum], '(col', sourceCol, ') to', monthNames[targetMonthNum], '(col', targetCol, ')');
-      console.log('[Calendar] Source qty:', currentQty, 'Target current qty:', targetCurrentQty);
-      
-      if (currentQty > 0) {
-        // Calculate new target quantity, handle NaN
-        const newTargetQty = (isNaN(targetCurrentQty) ? 0 : targetCurrentQty) + currentQty;
-        
-        // Update: clear source, add to target
-        const updatedData = {};
-        updatedData[monthNames[sourceMonthNum]] = '0';
-        updatedData[monthNames[targetMonthNum]] = String(newTargetQty);
-        
-        console.log('[Calendar] Sending update:', updatedData, 'for project index', draggedEvent.projectIndex);
-        
-        try {
-          await onEditEvent(updatedData, draggedEvent.projectIndex);
-          console.log('[Calendar] ✓ Move successful, should refetch now');
-          
-          // Track moved project by name with target month for 5 seconds
-          const projectName = project[5] || `Project ${draggedEvent.projectIndex}`;
-          const trackKey = `${projectName}-${targetMonthNum}`;
-          
-          setRecentlyMoved(prev => {
-            const next = new Map(prev);
-            next.set(trackKey, { projectName, targetMonth: targetMonthNum });
-            console.log('[Calendar] Tracking moved project:', trackKey);
-            return next;
-          });
-          
-          setTimeout(() => {
-            setRecentlyMoved(prev => {
-              const next = new Map(prev);
-              next.delete(trackKey);
-              console.log('[Calendar] Removing highlight for:', trackKey);
-              return next;
-            });
-          }, 5000);
-        } catch (err) {
-          console.error('[Calendar] ✗ Move failed:', err);
-          alert('Failed to move: ' + err.message);
-        }
-      } else {
-        console.log('[Calendar] No quantity to move');
-      }
-    } else {
-      console.log('[Calendar] Not a forecast event, type:', draggedEvent.type);
-    }
-    
-    setDraggedEvent(null);
   };
 
   // Get current and upcoming events
@@ -394,17 +298,7 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
             return (
               <div 
                 key={monthIdx} 
-                className={`year-month-card ${draggedEvent && 'drop-target'}`}
-                onDragOver={handleDragOver}
-                onDragEnter={(e) => {
-                  e.preventDefault();
-                  console.log('[Calendar] Drag enter month', monthIdx);
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  console.log('[Calendar] Drop detected on month', monthIdx);
-                  handleDrop(monthIdx);
-                }}
+                className="year-month-card"
               >
                 <div className="year-month-header">
                   <h3>{monthName} {currentYear}</h3>
@@ -413,22 +307,15 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
                 <div className="year-month-events">
                   {monthEvents.length > 0 ? (
                     monthEvents.map(evt => {
-                      const project = projects[evt.projectIndex];
-                      const projectName = project ? (project[5] || `Project ${evt.projectIndex}`) : '';
-                      const trackKey = `${projectName}-${monthIdx}`;
-                      const isRecentlyMoved = recentlyMoved.has(trackKey);
                       return (
                         <div 
                           key={evt.id} 
-                          className={`year-event ${evt.type} ${draggedEvent?.id === evt.id ? 'dragging' : ''} ${isRecentlyMoved ? 'recently-moved' : ''}`}
-                          draggable={evt.type === 'forecast'}
-                          onDragStart={(e) => handleDragStart(evt, monthIdx, e)}
+                          className={`year-event ${evt.type}`}
                         >
                           <span className="event-dot"></span>
                           <div className="event-content">
                             <div className="event-label">
                               {evt.title}
-                              {isRecentlyMoved && <span className="moved-badge">✓ Moved</span>}
                             </div>
                             <div className="event-meta-text">{evt.time}</div>
                           </div>
@@ -593,6 +480,17 @@ export default function CalendarViewFixed({ projects = [], onEditEvent }) {
                   />
                 </div>
               )}
+              <div className="form-row">
+                <label className="form-label">Year</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={editingEvent.year}
+                  onChange={(e) => setEditingEvent({ ...editingEvent, year: Number(e.target.value) })}
+                  min="2020"
+                  max="2030"
+                />
+              </div>
               <div className="form-row">
                 <label className="form-label">Month</label>
                 <input

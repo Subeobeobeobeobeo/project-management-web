@@ -449,6 +449,44 @@ export default function Dashboard({ projects = [] }) {
       
       const regionLayers = {};
       
+      // Track markers for cleanup
+      const markersAdded = new Set();
+      const allMarkers = [];
+      let markersVisible = false;
+      
+      // Create marker cluster group BEFORE event handlers
+      const markerCluster = L.markerClusterGroup({
+        maxClusterRadius: 80,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function(cluster) {
+          const count = cluster.getChildCount();
+          let size = 'small';
+          if (count >= 100) size = 'large';
+          else if (count >= 50) size = 'medium';
+          
+          return L.divIcon({ 
+            html: `<div style="
+              background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+              border: 3px solid white;
+              border-radius: 50%;
+              box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              font-size: ${size === 'large' ? '16px' : size === 'medium' ? '14px' : '12px'};
+              width: ${size === 'large' ? '60px' : size === 'medium' ? '50px' : '40px'};
+              height: ${size === 'large' ? '60px' : size === 'medium' ? '50px' : '40px'};
+            ">${count}</div>`,
+            className: 'marker-cluster-custom',
+            iconSize: L.point(size === 'large' ? 60 : size === 'medium' ? 50 : 40, size === 'large' ? 60 : size === 'medium' ? 50 : 40)
+          });
+        }
+      });
+      
       // Load Vietnam GeoJSON and fill with gradient color
       console.log('🗺️ Loading Vietnam GeoJSON...');
       
@@ -794,41 +832,7 @@ export default function Dashboard({ projects = [] }) {
    🟢 Miền Nam: ${regionDefs.south.projects.length} projects
       `);
 
-      // Track markers for cleanup
-      const markersAdded = new Set();
-      const allMarkers = [];
-      let markersVisible = false;
-      
-      // Create marker cluster group with custom styling
-      const markerCluster = L.markerClusterGroup({
-        maxClusterRadius: 80,
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        iconCreateFunction: function(cluster) {
-          const count = cluster.getChildCount();
-          let size = 'small';
-          if (count >= 10) size = 'medium';
-          if (count >= 50) size = 'large';
-          
-          return L.divIcon({
-            html: `<div style="
-              background: linear-gradient(135deg, #bc0e09, #8b0a06);
-              color: white;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-weight: 700;
-              font-size: ${size === 'large' ? '16px' : size === 'medium' ? '14px' : '12px'};
-              box-shadow: 0 4px 12px rgba(188, 14, 9, 0.4);
-              border: 3px solid white;
-            ">${count}</div>`,
-            className: 'marker-cluster marker-cluster-' + size,
-            iconSize: L.point(size === 'large' ? 50 : size === 'medium' ? 42 : 36, size === 'large' ? 50 : size === 'medium' ? 42 : 36)
-          });
-        }
-      });
+      // markerCluster and tracking variables now declared above (before fetch)
       
       // Function to create and add individual marker
       const addMarker = (p, idx, coord) => {

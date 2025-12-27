@@ -23,7 +23,6 @@ function Sidebar({ onAddProject, onOpenCalendar, onOpenProjects, onOpenWeekly, a
             >Danh sách dự án</button>
             <button
               onClick={() => {
-                onChange?.('add');
                 onAddProject && onAddProject();
               }}
               className={`nav-btn ${active === 'add' ? 'active' : ''}`}

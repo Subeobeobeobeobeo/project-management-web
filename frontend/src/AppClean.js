@@ -23,8 +23,9 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showWeekly, setShowWeekly] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedProjects, setSelectedProjects] = useState(null);
+  const [selectedProjectsForEdit, setSelectedProjectsForEdit] = useState(null);
+  const [selectedIndices, setSelectedIndices] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [winningFilter, setWinningFilter] = useState([]);
   const [sortOption, setSortOption] = useState('');
@@ -32,6 +33,9 @@ export default function App() {
   const [rangeTo, setRangeTo] = useState('');
   const [showListingControls, setShowListingControls] = useState(false);
   const [profileExpanded, setProfileExpanded] = useState(false);
+  const [newlyCreatedProjectIndices, setNewlyCreatedProjectIndices] = useState([]);
+  const [previousTab, setPreviousTab] = useState('home');
+  const [recentlyMovedInCalendar, setRecentlyMovedInCalendar] = useState(new Map());
 
   const filterBtnRef = useRef(null);
   const popoverRef = useRef(null);
@@ -102,15 +106,20 @@ export default function App() {
     if (Array.isArray(created)) {
       const v = created[4] && created[4].toString().trim();
       if (!v || !/^https?:\/\//i.test(v)) created[4] = `https://picsum.photos/seed/${projects.length}/600/360`;
-      setProjects(prev => [...prev, created]);
+      setProjects(prev => {
+        const newProjects = [...prev, created];
+        const newIndex = newProjects.length - 1;
+        setNewlyCreatedProjectIndices(prevIndices => [...prevIndices, newIndex]);
+        return newProjects;
+      });
     }
-    setShowAddModal(false);
-    setActiveTab('projects');
+    // Don't close modal - let AddProjectModal handle success message and form reset
   };
 
-  const handleUpdateProject = async (updatedProject, rowIdx) => {
-    const targetIndex = typeof rowIdx === 'number' ? rowIdx : selectedIndex;
+  const handleUpdateProject = async (updatedProject, rowIdx, options = {}) => {
+    const targetIndex = rowIdx;
     if (targetIndex == null) return;
+    console.log('[App] Updating project at index', targetIndex, 'with data:', updatedProject);
     const sheetRow = targetIndex + 7;
     const res = await fetch(`${API_BASE}/api/projects/${sheetRow}`, {
       method: 'PUT',
@@ -123,9 +132,47 @@ export default function App() {
       const v = updatedArray[4] && updatedArray[4].toString().trim();
       if (!v || !/^https?:\/\//i.test(v)) updatedArray[4] = `https://picsum.photos/seed/${targetIndex}/600/360`;
     }
-    // Refetch all projects to ensure calendar updates correctly
+    // Refetch all projects FIRST to get fresh data
     await fetchProjects();
-    setSelectedProject(updatedArray);
+    
+    // Track moved project for calendar highlight AFTER refetch
+    if (options.movedToMonth != null) {
+      const projectName = updatedArray[5] || `Project ${targetIndex}`;
+      // Dùng projectName + targetMonth làm key duy nhất
+      const trackKey = `${projectName}__${options.movedToMonth}`;
+      setRecentlyMovedInCalendar(prev => {
+        const next = new Map(prev);
+        next.set(trackKey, { 
+          projectName, 
+          targetMonth: options.movedToMonth
+        });
+        console.log('[App] ✅ Tracking moved project:', projectName, 'to month', options.movedToMonth);
+        return next;
+      });
+      // Remove highlight sau 4s
+      setTimeout(() => {
+        setRecentlyMovedInCalendar(prev => {
+          const next = new Map(prev);
+          next.delete(trackKey);
+          return next;
+        });
+      }, 4000);
+    }
+    console.log('[App] Projects refetched, count:', projects.length);
+    
+    // Debug: check if the moved project has the new forecast
+    if (options.movedToMonth != null) {
+      console.log('[App] 🔍 Checking project after refetch...');
+      // Note: projects state might not be updated yet due to async setState
+      setTimeout(() => {
+        console.log('[App] 🔍 Delayed check - looking for project with movedToMonth:', options.movedToMonth);
+      }, 100);
+    }
+    
+    // Only show details popup if not from calendar drag-drop
+    if (!options.skipPopup) {
+      // setSelectedProjects(updatedArray.map((proj, idx) => ({project: proj, index: idx}))); // TODO: update indices
+    }
   };
 
   const filteredProjects = useMemo(() => {
@@ -272,7 +319,7 @@ export default function App() {
   };
 
   const openAddProject = () => {
-    setActiveTab('add');
+    setPreviousTab(activeTab);
     setShowAddModal(true);
   };
 
@@ -282,7 +329,7 @@ export default function App() {
         <AddProjectModal
           onClose={() => {
             setShowAddModal(false);
-            setActiveTab('projects');
+            setActiveTab(previousTab);
           }}
           onCreate={handleCreateProject}
         />
@@ -295,14 +342,14 @@ export default function App() {
       return <WeeklyReport projects={filteredProjects} />;
     }
     if (showCalendar) {
+      console.log('[App] Rendering CalendarView with projects:', projects.length);
       return (
         <CalendarView
-          projects={filteredProjects}
-          onEditEvent={(upd, idx) => {
-            const proj = filteredProjects[idx];
-            const globalIdx = projects.findIndex(p => p === proj);
-            if (globalIdx === -1) return;
-            handleUpdateProject(upd, globalIdx);
+          projects={projects}
+          recentlyMovedMap={recentlyMovedInCalendar}
+          onEditEvent={async (upd, idx, movedToMonth) => {
+            console.log('[App] onEditEvent called with:', upd, idx, 'movedToMonth:', movedToMonth);
+            await handleUpdateProject(upd, idx, { skipPopup: true, movedToMonth });
           }}
         />
       );
@@ -310,14 +357,11 @@ export default function App() {
     return (
       <ProjectList
         projects={filteredProjects}
-        onSelect={(p) => {
-          let globalIdx = projects.findIndex(item => item === p);
-          if (globalIdx === -1) {
-            globalIdx = projects.findIndex(pr => (pr[5] || '') === (p[5] || ''));
-          }
-          setSelectedProject(p);
-          setSelectedIndex(globalIdx === -1 ? null : globalIdx);
+        onSelect={(projectCode) => {
+          setSelectedProjects(projects.map((proj, idx) => ({project: proj, index: idx})).filter(item => item.project[3] === projectCode));
         }}
+        newlyCreatedIndices={newlyCreatedProjectIndices}
+        onClearNewProjects={() => setNewlyCreatedProjectIndices([])}
       />
     );
   };
@@ -573,12 +617,33 @@ export default function App() {
         </div>
       </div>
 
-      {selectedProject && (
+      {selectedProjects && (
         <ProjectDetail
-          project={selectedProject}
-          rowIndex={selectedIndex}
-          onClose={() => setSelectedProject(null)}
+          selectedProjects={selectedProjects}
+          onClose={() => setSelectedProjects(null)}
           onUpdate={handleUpdateProject}
+          onEdit={() => {
+            const indices = selectedProjects.map(proj => projects.indexOf(proj));
+            setSelectedIndices(indices);
+            setSelectedProjectsForEdit(selectedProjects);
+            setShowAddModal(true);
+            setSelectedProjects(null); // Close detail
+          }}
+          selectedIndices={selectedIndices}
+        />
+      )}
+
+      {showAddModal && (
+        <AddProjectModal
+          onClose={() => {
+            setShowAddModal(false);
+            setSelectedProjectsForEdit(null);
+            setSelectedIndices([]);
+          }}
+          onCreate={handleCreateProject}
+          onUpdate={handleUpdateProject}
+          initialProjects={selectedProjectsForEdit}
+          initialIndices={selectedIndices}
         />
       )}
     </div>
