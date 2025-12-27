@@ -56,7 +56,7 @@ const sheets = google.sheets({ version: 'v4', auth });
 const headers = [
   'Sales PIC','Project ID','Sub ID','Project Code','Project Link','Project Name',
   'Project Segment','Project Type','Developer','Contractor','Designer','Competitor',
-  'Area','Location','Distributor','Product Code','Product Name','Total Quantity',
+  'Area','Location','Distributor','Product Code','Product Name','Loại sản phẩm','Total Quantity',
   'Price','Total Turnover','Winning Rate','Status','Note','Creation Week','Delivery Year',
   'Next Delivery','MTD Invoice','YTD Invoice','Invoiced PY','Open PL Qty','Forecast FY',
   'Carry-Over Qty','JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC',
@@ -69,7 +69,7 @@ function colLetter(n){
   return s;
 }
 const SHEET_NAME = 'B2B web data';
-const END_COL = 'AW';
+const END_COL = 'AX';
 
 // Ensure header row (row 6) matches our `headers` definition. This will overwrite row 6.
 async function ensureHeadersRow(){
@@ -96,6 +96,16 @@ app.get('/api/projects', async (req, res) => {
       spreadsheetId: SHEET_ID,
       range: `${SHEET_NAME}!A6:${END_COL}`, // row 6 là header
     });
+    
+    const rows = response.data.values || [];
+    // Log row 16 (which would be index 10 in rows array: row 6=header, row 7=index 1, ..., row 16=index 10)
+    if (rows[10]) {
+      console.log(`\n📊 GET /api/projects - Row 16 (array index 10):`);
+      console.log('  Project Name (col 5):', rows[10][5]);
+      console.log('  JAN (col 32):', rows[10][32]);
+      console.log('  FEB (col 33):', rows[10][33]);
+    }
+    
     res.json(response.data); // trả về { values: [...] }
   } catch (err) {
     console.error(err);
@@ -132,11 +142,35 @@ app.put('/api/projects/:rowIndex', async (req, res) => {
     const rowIndex = parseInt(req.params.rowIndex); // row trong sheet (tính từ 1)
     const updatedProject = req.body;
 
+    console.log(`\n📝 PUT /api/projects/${rowIndex}`);
+    console.log('📦 Received update:', updatedProject);
+
     if (!updatedProject || isNaN(rowIndex)) {
       return res.status(400).send('Missing data or invalid row index');
     }
 
-    const row = headers.map(h => updatedProject[h] || '');
+    // 🔧 FIX: Fetch existing row first, then merge updates
+    const existingResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `${SHEET_NAME}!A${rowIndex}:${END_COL}${rowIndex}`,
+    });
+
+    const existingRow = (existingResponse.data.values && existingResponse.data.values[0]) || [];
+    
+    // Build the updated row by merging existing data with updates
+    const row = headers.map((h, idx) => {
+      // If updatedProject has this field, use it; otherwise keep existing value
+      if (updatedProject.hasOwnProperty(h)) {
+        const value = updatedProject[h];
+        // Convert "0" string to empty string to clear the cell
+        return (value === '0' || value === 0) ? '' : (value || '');
+      } else {
+        return existingRow[idx] || '';
+      }
+    });
+
+    console.log('✅ Update:', Object.keys(updatedProject).map(k => `${k}:${updatedProject[k]}`).join(', '));
+    console.log('✅ Result row length:', row.length);
 
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
@@ -145,6 +179,18 @@ app.put('/api/projects/:rowIndex', async (req, res) => {
       resource: { values: [row] },
     });
 
+    console.log('✅ Update successful to Google Sheets');
+    // Log lại giá trị thực tế của cell tháng cũ và tháng mới sau update
+    const checkResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `${SHEET_NAME}!A${rowIndex}:${END_COL}${rowIndex}`,
+    });
+    const checkRow = (checkResponse.data.values && checkResponse.data.values[0]) || [];
+    const months = Object.keys(updatedProject).filter(k => monthHeaderIndex && monthHeaderIndex[k] != null);
+    months.forEach(m => {
+      const idx = headers.indexOf(m);
+      console.log(`🟢 After update: ${m} (col ${idx}):`, checkRow[idx]);
+    });
     // trả về array mới để frontend cập nhật ngay
     res.json(row);
   } catch (err) {

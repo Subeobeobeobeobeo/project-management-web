@@ -1,0 +1,209 @@
+[dotenv@17.2.3] injecting env (2) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+✅ Loaded credentials from file
+Server running on port 5050
+
+📝 PUT /api/projects/108
+📦 Received update: { MAR: '0', FEB: '169' }
+✅ Update: MAR:0, FEB:169
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/26
+📦 Received update: { FEB: '0', JAN: '332' }
+✅ Update: FEB:0, JAN:332
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/71
+📦 Received update: { MAY: '0', JUN: '312' }
+✅ Update: MAY:0, JUN:312
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/69
+📦 Received update: { JUL: '0', AUG: '382' }
+✅ Update: JUL:0, AUG:382
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/11
+📦 Received update: { JUN: '0', MAY: '300' }
+✅ Update: JUN:0, MAY:300
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/69
+📦 Received update: { MAY: '0', JUN: '312' }
+✅ Update: MAY:0, JUN:312
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/26
+📦 Received update: { FEB: '0', JAN: '332' }
+✅ Update: FEB:0, JAN:332
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/109
+📦 Received update: { FEB: '0', JAN: '169' }
+✅ Update: FEB:0, JAN:169
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/338
+📦 Received update: { JAN: '0', FEB: '50' }
+✅ Update: JAN:0, FEB:50
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/12
+📦 Received update: { MAY: '0', JUN: '300' }
+✅ Update: MAY:0, JUN:300
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/9
+📦 Received update: { MAR: '0', APR: '100' }
+✅ Update: MAR:0, APR:100
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/26
+📦 Received update: { FEB: '0', JAN: '332' }
+✅ Update: FEB:0, JAN:332
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/340
+📦 Received update: { OCT: '0', MAR: '1008' }
+✅ Update: OCT:0, MAR:1008
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/341
+📦 Received update: { MAR: '0', OCT: '1008' }
+✅ Update: MAR:0, OCT:1008
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/341
+📦 Received update: { MAR: '0', OCT: '1008' }
+✅ Update: MAR:0, OCT:1008
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
+
+📝 PUT /api/projects/26
+📦 Received update: { FEB: '0', MAR: '332' }
+✅ Update: FEB:0, MAR:332
+✅ Result row length: 49
+✅ Update successful to Google Sheets
+
+📊 GET /api/projects - Row 16 (array index 10):
+  Project Name (col 5): LAKESIDE HAI PHONG
+  JAN (col 32): -
+  FEB (col 33): -
