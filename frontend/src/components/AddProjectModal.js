@@ -147,8 +147,12 @@ export default function AddProjectModal({ onClose, onCreate, onUpdate, initialPr
         setProducts(prev => prev.map((p, idx) => idx === currentProduct ? { ...p, code: nameToCode[value] } : p));
       }
     } else if (activeTab === 2) {
-      // Delivery
-      setProducts(prev => prev.map((p, idx) => idx === currentProduct ? { ...p, delivery: { ...p.delivery, [name]: value } } : p));
+      // Delivery or months
+      if (months.includes(name)) {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      } else {
+        setProducts(prev => prev.map((p, idx) => idx === currentProduct ? { ...p, delivery: { ...p.delivery, [name]: value } } : p));
+      }
     } else {
       // Other
       setFormData(prev => ({ ...prev, [name]: value }));

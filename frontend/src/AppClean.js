@@ -320,6 +320,7 @@ export default function App() {
 
   const openAddProject = () => {
     setPreviousTab(activeTab);
+    setActiveTab('add');
     setShowAddModal(true);
   };
 
@@ -330,8 +331,13 @@ export default function App() {
           onClose={() => {
             setShowAddModal(false);
             setActiveTab(previousTab);
+            setSelectedProjectsForEdit(null);
+            setSelectedIndices([]);
           }}
           onCreate={handleCreateProject}
+          onUpdate={handleUpdateProject}
+          initialProjects={selectedProjectsForEdit}
+          initialIndices={selectedIndices}
         />
       );
     }
@@ -633,19 +639,6 @@ export default function App() {
         />
       )}
 
-      {showAddModal && (
-        <AddProjectModal
-          onClose={() => {
-            setShowAddModal(false);
-            setSelectedProjectsForEdit(null);
-            setSelectedIndices([]);
-          }}
-          onCreate={handleCreateProject}
-          onUpdate={handleUpdateProject}
-          initialProjects={selectedProjectsForEdit}
-          initialIndices={selectedIndices}
-        />
-      )}
     </div>
   );
 }
